@@ -7,7 +7,8 @@ class App extends Component {
     super(props);
     this.state = {
       value: '',
-      data: {} //filled by fetch data from API
+      data: {}, //filled by fetch data from API
+      imgData: {} //filled by fetch image data from API
     };
   }
   
@@ -29,8 +30,10 @@ class App extends Component {
 			  }
 			  // Examine the text in the response  
 			  response.json().then(function(data) {  
-				console.log(data.name +" "+ data.id);
+				console.log(data);
+				console.log(data.sprites.front_default);
                 _this.setState({data: data});
+               _this.setState({imgData: data.sprites});
 
 			  });  
 			} 
@@ -38,6 +41,7 @@ class App extends Component {
 		  .catch(function(err) {  
 			console.log('Fetch Error :-S', err);  
             _this.setState({data: {}});
+			_this.setState({imgData: {}});
 		  });
 
 		  }
@@ -46,6 +50,7 @@ class App extends Component {
   render() {
 	  
 	  var data = this.state.data;
+	  var imgData= this.state.imgData;
 	  
     return (
     
@@ -65,9 +70,11 @@ class App extends Component {
         onChange={this.handleChange.bind(this)}
         />
         <button type="button" onClick={this.handleSubmit.bind(this)}>Search the Pokedex</button>
-      <h3>{data.id}</h3>       
-      <h3>{data.name}</h3>
-        
+      <h3>ID: {data.id}</h3>       
+      <h3>Name: {data.name}</h3>
+      <h3>Weight: {data.weight}</h3>
+      <img src={imgData.front_default}/>
+   
       </div>
       
       
