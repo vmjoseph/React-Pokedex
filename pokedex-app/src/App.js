@@ -7,15 +7,16 @@ class App extends Component {
     super(props);
        this.openModal = this.openModal.bind(this);
       this.closeModal = this.closeModal.bind(this);
-    this.state = {
-      value: '',
-      data: {}, //filled by fetch data from API
-      imgData: {}, //filled by fetch image data from API
-      typeData: {}, //filled by fetch types data from API
-      types: {typesArray:[]},
-      typeDataTotal: {},
-      specificTypeData: {}
-    };	
+		this.state = {
+		  value: '',
+		  idPoke: '',
+		  data: {}, //filled by fetch data from API
+		  imgData: {}, //filled by fetch image data from API
+		  typeData: {}, //filled by fetch types data from API
+		  types: {typesArray:[]},
+		  typeDataTotal: {},
+		  specificTypeData: {}
+		};	
   }
   
  openModal () { this.setState({open: true}); }
@@ -30,7 +31,6 @@ class App extends Component {
 
   handleSubmit(event) {
 	  
-    //alert('Text field value is: ' + this.state.value);
      var _this = this;
 		fetch('https://pokeapi.co/api/v2/pokemon/'+this.state.value+'/')  
 		  .then(  
@@ -41,7 +41,7 @@ class App extends Component {
 				return;  
 			  }
 			  // Examine the text in the response  
-			  response.json().then(function(data) {  
+			  response.json().then(function(data) {
 				console.log(data);
 				console.log(data.sprites.front_default);
                 _this.setState({data: data});
@@ -52,7 +52,26 @@ class App extends Component {
 			//	console.log(data.types[0].type.name);
 				//console.log(data.types[1].type.name);
 				console.log(Object.keys(data.types).length);
- 
+				console.log("data.types "+ data.types);
+				
+		  fetch('https://pokeapi.co/api/v2/ability/'+data.name)
+		  		  .then(  
+			function(response) {  
+			  if (response.status !== 200) {  
+				console.log('Looks like there was a problem. Status Code: ' +  
+				  response.status);  
+				return;  
+			  }
+			  // Examine the text in the response  
+			  response.json().then(function(data2) {  
+				console.log(data2.generation.name);
+
+			  });  
+			} 
+		  )  
+		  .catch(function(err) {  
+			console.log('Fetch Error :-S', err);  
+		  });				
 
 			  });  
 			} 
@@ -64,7 +83,9 @@ class App extends Component {
 			_this.setState({typeData: {}});
             _this.setState({typeDataTotal: {}});
             _this.setState({specificTypeData: {}});
+            _this.setState({idPoke: {}});
 		  });
+
 
 		  }
 
@@ -77,22 +98,23 @@ class App extends Component {
 	  var imgData= this.state.imgData;
 	  var typeData= this.state.typeData;
 	  var typeDataTotal= this.state.typeDataTotal;  
-	  var specificTypeData= this.state.specificTypeData;  
-	  var forms = [];
-/*for(var i= 0; i>typeDataTotal.length; i++){
-console.log("logged one type.");
-}
-for (var i = 0; i > typeDataTotal.length; i++) {
-    forms.push(<formjs data={specificTypeData[i].type.name} />);
-console.log(forms);
-}
-* 
-*  <h3>ID: {data.id}</h3> */
-for (var keys in typeDataTotal) {
-  console.log("obj." + keys + " = " + specificTypeData[keys].type.name);
-    forms.push(<formjs key={specificTypeData[keys]} data={specificTypeData[keys].type.name} />);
-    console.log(forms);
-}
+	  //var specificTypeData= this.state.specificTypeData;  
+	// var idPoke= this.state.idPoke;  
+		var forms = [];
+	/*for(var i= 0; i>typeDataTotal.length; i++){
+	console.log("logged one type.");
+	}
+	for (var i = 0; i > typeDataTotal.length; i++) {
+	forms.push(<formjs data={specificTypeData[i].type.name} />);
+	console.log(forms);
+	}
+	* 
+	*  <h3>ID: {data.id}</h3> 
+	for (var keys in specificTypeData) {
+	//console.log("obj." + keys + " = " + specificTypeData[keys].type.name);
+	forms.push(<formjs data={specificTypeData} />);
+	console.log(forms);
+	}*/
 
     return (
     
@@ -110,7 +132,7 @@ for (var keys in typeDataTotal) {
       <div class="infoBoxes">
 		  <h3>Name: {data.name}</h3>
 		  <h3>Weight: {data.weight}</h3>
-		  <h3>Type Name: {typeData.name}</h3>
+		  <h3>Type: {typeData.name}</h3>
 		  <h3>Type Total: {typeDataTotal.length}</h3>
 		   <div>{forms}</div>
       <a href="#"  onClick={this.openModal}>More Info</a>
@@ -125,11 +147,11 @@ for (var keys in typeDataTotal) {
         <button type="button" onClick={this.handleSubmit.bind(this)}>Search the Pokedex</button>
  
            <Modal isOpen={this.state.open}>
-      <img src={imgData.front_default} alt={data.name}/>
-      <img src={imgData.back_default} alt={data.name}/>
-      <img src={imgData.front_shiny} alt={data.name}/>
-      <img src={imgData.back_shiny} alt={data.name}/>
             <h1>Name: {data.name}</h1>
+      <img src={imgData.front_default} alt={data.name}/> Normal
+      <img src={imgData.back_default} alt={data.name}/>
+      <img src={imgData.front_shiny} alt={data.name}/>Shiny
+      <img src={imgData.back_shiny} alt={data.name}/>
             <h3>Weight: {data.weight}</h3>
             <h3>Height: {data.height}</h3>
             <h3>Pokedex Index: {data.id}</h3>
