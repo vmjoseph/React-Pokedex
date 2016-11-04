@@ -13,8 +13,9 @@ Welcome to the Virtual Pokedex created with React Js!
 * Ability to View More than One Type
 
 #Running the Application:
-1. Clone the Project `git clone https://github.com/vmjoseph/React-Pokedex.git`
-2. `npm install -g create-react-app`
-3. `cd React-Pokedex`
-4. `cd pokedex-app/src`
-5. `npm start`
+1. `npm install -g create-react-app
+create-react-app my-app
+cd poke-app/
+npm start`
+2. In a seperate directory, `git clone https://github.com/vmjoseph/React-Pokedex.git`
+3. Then, move `src/App.js`, and `src/App.css` into the appropriate folders within your new app.
