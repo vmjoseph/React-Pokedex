@@ -1,13 +1,17 @@
+//importing all packages
 import React, { Component } from 'react';
 import './App.css';
 import Modal from 'react-modal';
 
+//main class
 class App extends Component {
 	constructor(props) {
     super(props);
-       this.openModal = this.openModal.bind(this);
+//initiate modal binds		
+      this.openModal = this.openModal.bind(this);
       this.closeModal = this.closeModal.bind(this);
 		this.state = {
+//initiate states for later use
 		  value: '',
 		  idPoke: '',
 		  data: {}, //filled by fetch data from API
@@ -18,20 +22,21 @@ class App extends Component {
 		  specificTypeData: {}
 		};	
   }
-  
+ //set modal states 
  openModal () { this.setState({open: true}); }
-
-    closeModal () { this.setState({open: false}); }
+ closeModal () { this.setState({open: false}); }
 
   
-
+//sets the value state for search query
    handleChange(event) {
     this.setState({value: event.target.value});
   }
 
+//triggered on button click	
   handleSubmit(event) {
-	  
+//localize a global 'this' to better manage components	  
      var _this = this;
+//making api call with user inputed query	  
 		fetch('https://pokeapi.co/api/v2/pokemon/'+this.state.value+'/')  
 		  .then(  
 			function(response) {  
@@ -42,65 +47,63 @@ class App extends Component {
 			  }
 			  // Examine the text in the response  
 			  response.json().then(function(data) {
-				console.log(data);
-				console.log(data.sprites.front_default);
-                _this.setState({data: data});
-               _this.setState({imgData: data.sprites});
-               _this.setState({typeData: data.types[0].type});	
-               _this.setState({specificTypeData: data.types});	  
-               _this.setState({typeDataTotal: Object.keys(data.types)});
-			//	console.log(data.types[0].type.name);
+				//console.log(data);
+				//console.log(data.sprites.front_default);
+                		_this.setState({data: data});
+               			_this.setState({imgData: data.sprites});
+               			_this.setState({typeData: data.types[0].type});	
+              			 _this.setState({specificTypeData: data.types});	  
+              		 	_this.setState({typeDataTotal: Object.keys(data.types)});
+				//console.log(data.types[0].type.name);
 				//console.log(data.types[1].type.name);
 				console.log(Object.keys(data.types).length);
 				console.log("data.types "+ data.types);
-				
-		  fetch('https://pokeapi.co/api/v2/ability/'+data.name)
-		  		  .then(  
-			function(response) {  
-			  if (response.status !== 200) {  
-				console.log('Looks like there was a problem. Status Code: ' +  
-				  response.status);  
-				return;  
-			  }
-			  // Examine the text in the response  
-			  response.json().then(function(data2) {  
-				console.log(data2.generation.name);
+		//grabbing abilities based on searched pokemon		
+				  fetch('https://pokeapi.co/api/v2/ability/'+data.name)
+						  .then(  
+					function(response) {  
+					  if (response.status !== 200) {  
+						console.log('Looks like there was a problem. Status Code: ' +  
+						  response.status);  
+						return;  
+					  }
+					  // Examine the text in the response  
+					  response.json().then(function(data2) {  
+						console.log(data2.generation.name);
+
+					  });  
+					} 
+				  )  
+				  .catch(function(err) {  
+					console.log('Fetch Error :-S', err);  
+				  });				
 
 			  });  
 			} 
 		  )  
 		  .catch(function(err) {  
 			console.log('Fetch Error :-S', err);  
-		  });				
-
-			  });  
-			} 
-		  )  
-		  .catch(function(err) {  
-			console.log('Fetch Error :-S', err);  
-            _this.setState({data: {}});
-			_this.setState({imgData: {}});
-			_this.setState({typeData: {}});
-            _this.setState({typeDataTotal: {}});
-            _this.setState({specificTypeData: {}});
-            _this.setState({idPoke: {}});
+				_this.setState({data: {}});
+				_this.setState({imgData: {}});
+				_this.setState({typeData: {}});
+				_this.setState({typeDataTotal: {}});
+				_this.setState({specificTypeData: {}});
+				_this.setState({idPoke: {}});
 		  });
 
 
 		  }
 
-
-
-    
   render() {
 	  
 	  var data = this.state.data;
 	  var imgData= this.state.imgData;
 	  var typeData= this.state.typeData;
-	  var typeDataTotal= this.state.typeDataTotal;  
+	  var typeDataTotal= this.state.typeDataTotal;
+	  var forms = []; 
 	  //var specificTypeData= this.state.specificTypeData;  
 	// var idPoke= this.state.idPoke;  
-		var forms = [];
+
 	/*for(var i= 0; i>typeDataTotal.length; i++){
 	console.log("logged one type.");
 	}
@@ -115,11 +118,8 @@ class App extends Component {
 	forms.push(<formjs data={specificTypeData} />);
 	console.log(forms);
 	}*/
-
+//returning all components
     return (
-    
-
-    
       <div className="App">
 
       <div className="App-topHeader">
@@ -145,7 +145,7 @@ class App extends Component {
         onChange={this.handleChange.bind(this)}
         />
         <button type="button" onClick={this.handleSubmit.bind(this)}>Search the Pokedex</button>
- 
+ //modal 
            <Modal isOpen={this.state.open}>
             <h1>Name: {data.name}</h1>
       <img src={imgData.front_default} alt={data.name}/> Normal
