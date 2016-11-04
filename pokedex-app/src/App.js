@@ -1,20 +1,27 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
-import logo2 from './International_Pokémon_logo.png';	
 import './App.css';
+import Modal from 'react-modal';
 
 class App extends Component {
 	constructor(props) {
     super(props);
+       this.openModal = this.openModal.bind(this);
+      this.closeModal = this.closeModal.bind(this);
     this.state = {
       value: '',
       data: {}, //filled by fetch data from API
       imgData: {}, //filled by fetch image data from API
       typeData: {}, //filled by fetch types data from API
       types: {typesArray:[]},
-      typeDataTotal: {}
+      typeDataTotal: {},
+      specificTypeData: {}
     };	
   }
+  
+ openModal () { this.setState({open: true}); }
+
+    closeModal () { this.setState({open: false}); }
+
   
 
    handleChange(event) {
@@ -22,6 +29,7 @@ class App extends Component {
   }
 
   handleSubmit(event) {
+	  
     //alert('Text field value is: ' + this.state.value);
      var _this = this;
 		fetch('https://pokeapi.co/api/v2/pokemon/'+this.state.value+'/')  
@@ -38,12 +46,13 @@ class App extends Component {
 				console.log(data.sprites.front_default);
                 _this.setState({data: data});
                _this.setState({imgData: data.sprites});
-               _this.setState({typeData: data.types[0].type});	  
+               _this.setState({typeData: data.types[0].type});	
+               _this.setState({specificTypeData: data.types});	  
                _this.setState({typeDataTotal: Object.keys(data.types)});
-
+			//	console.log(data.types[0].type.name);
+				//console.log(data.types[1].type.name);
 				console.log(Object.keys(data.types).length);
-				
-
+ 
 
 			  });  
 			} 
@@ -54,9 +63,11 @@ class App extends Component {
 			_this.setState({imgData: {}});
 			_this.setState({typeData: {}});
             _this.setState({typeDataTotal: {}});
+            _this.setState({specificTypeData: {}});
 		  });
 
 		  }
+
 
 
     
@@ -66,19 +77,44 @@ class App extends Component {
 	  var imgData= this.state.imgData;
 	  var typeData= this.state.typeData;
 	  var typeDataTotal= this.state.typeDataTotal;  
-
+	  var specificTypeData= this.state.specificTypeData;  
+	  var forms = [];
+/*for(var i= 0; i>typeDataTotal.length; i++){
+console.log("logged one type.");
+}
+for (var i = 0; i > typeDataTotal.length; i++) {
+    forms.push(<formjs data={specificTypeData[i].type.name} />);
+console.log(forms);
+}
+* 
+*  <h3>ID: {data.id}</h3> */
+for (var keys in typeDataTotal) {
+  console.log("obj." + keys + " = " + specificTypeData[keys].type.name);
+    forms.push(<formjs key={specificTypeData[keys]} data={specificTypeData[keys].type.name} />);
+    console.log(forms);
+}
 
     return (
     
 
     
       <div className="App">
-      
-      
+
+      <div className="App-topHeader">
+      <h3>Welcome to the ReactJS Pokedex!</h3>
+      <p class="small"><i>Enter the name of the pokemon to find out the deails below:</i></p>
+      </div>
         <div className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <img src={logo2} className="App-logo2" alt="logo2" />
-          <h2>Welcome to React</h2>
+      <img src={imgData.front_default} alt={data.name}/>
+      <img src={imgData.back_default} alt={data.name}/>
+      <div class="infoBoxes">
+		  <h3>Name: {data.name}</h3>
+		  <h3>Weight: {data.weight}</h3>
+		  <h3>Type Name: {typeData.name}</h3>
+		  <h3>Type Total: {typeDataTotal.length}</h3>
+		   <div>{forms}</div>
+      <a href="#"  onClick={this.openModal}>More Info</a>
+       </div>
         </div>
         
         <input type="text"
@@ -87,16 +123,21 @@ class App extends Component {
         onChange={this.handleChange.bind(this)}
         />
         <button type="button" onClick={this.handleSubmit.bind(this)}>Search the Pokedex</button>
-      <h3>ID: {data.id}</h3>       
-      <h3>Name: {data.name}</h3>
-      <h3>Weight: {data.weight}</h3>
-      <h3>Type Name: {typeData.name}</h3>
-      <h3>Type Total: {typeDataTotal.length}</h3>
-      
+ 
+           <Modal isOpen={this.state.open}>
       <img src={imgData.front_default} alt={data.name}/>
       <img src={imgData.back_default} alt={data.name}/>
+      <img src={imgData.front_shiny} alt={data.name}/>
+      <img src={imgData.back_shiny} alt={data.name}/>
+            <h1>Name: {data.name}</h1>
+            <h3>Weight: {data.weight}</h3>
+            <h3>Height: {data.height}</h3>
+            <h3>Pokedex Index: {data.id}</h3>
+            <h3>Base Experience: {data.base_experience}</h3>
+            <button onClick={this.closeModal}>Close</button>
+          </Modal>
+ 
       </div>
-      
       
       
     );
